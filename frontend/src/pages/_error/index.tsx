@@ -16,7 +16,7 @@ const Error = () => {
                 <h1 className="text-sm ">Arrendaki</h1>
                 <div  onClick={router.back} className="text-sm py-10 text-center ">
 
-                    <button className="text-purple-400 p-4 font-bold lg:px-20 bg-white rounded-lg">
+                    <button className="hover:scale-110 transition-all duration-300 text-purple-400 p-4 font-bold lg:px-20 bg-white rounded-lg">
                         Voltar
                     </button>
 
