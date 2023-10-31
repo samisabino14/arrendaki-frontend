@@ -4,11 +4,13 @@ import { FcCalendar } from 'react-icons/fc';
 import { FiMenu } from 'react-icons/fi';
 import { AiOutlineClose } from 'react-icons/ai';
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Button } from '../Button';
+import { AuthContext } from '@/contexts/AuthContext';
 
 export const Header = () => {
 
+    const isAuthenticated = false;
     const [toggle, setToggle] = useState(false)
 
     return (
@@ -32,22 +34,29 @@ export const Header = () => {
 
                     </Link>
 
-                    <Link href='/'>
+                    {
+                        !isAuthenticated && <>
+                            <Link href='/'>
 
-                        <span className='hover:text-purple-700'>Sobre</span>
+                                <span className='hover:text-purple-700'>Sobre</span>
 
-                    </Link>
+                            </Link>
 
-                    <Link href='/'>
+                            <Link href='/cadastro'>
 
-                        <span className='hover:text-purple-700'>Cadastrar-me</span>
+                                <span className='hover:text-purple-700'>Cadastrar-me</span>
 
-                    </Link>
+                            </Link>
+                        </>
+                    }
                 </div>
 
                 <div className='hidden md:block'>
 
-                    <Button link='#' text='Entrar' />                        
+                    {
+                        !isAuthenticated &&
+                        <Button link='/login' text='Entrar' />
+                    }
 
                 </div>
 
@@ -62,30 +71,30 @@ export const Header = () => {
 
             </div>
 
-            <div className={`duration-500 md:hidden flex flex-col w-[70%] rounded-lg h-screen fixed bg-purple-700/80 gap-6 text-white top-[60px] ${toggle ? `left-[0]` : `left-[-100%]`}`}>
+            <div className={`duration-500 md:hidden flex flex-col w-[80%] rounded-lg h-screen fixed bg-purple-700/80 gap-6 text-white top-[60px] ${toggle ? `left-[0]` : `left-[-100%]`}`}>
                 <p></p>
-                
+
                 <Link href='/'>
-                        <span className='hover:text-purple-700 p-5'>Início</span>
-                    </Link>
+                    <span className='hover:text-purple-700 p-5'>Início</span>
+                </Link>
 
-                    <Link href='/casas'>
+                <Link href='/casas'>
 
-                        <span className='hover:text-purple-700 p-5'>Casas</span>
+                    <span className='hover:text-purple-700 p-5'>Casas</span>
 
-                    </Link>
+                </Link>
 
-                    <Link href='/'>
+                <Link href='/'>
 
-                        <span className='hover:text-purple-700 p-5'>Sobre</span>
+                    <span className='hover:text-purple-700 p-5'>Sobre</span>
 
-                    </Link>
+                </Link>
 
-                    <Link href='/'>
+                <Link href='/cadastro'>
 
-                        <span className='hover:text-purple-700 p-5'>Cadastrar-me</span>
+                    <span className='hover:text-purple-700 p-5'>Cadastrar-me</span>
 
-                    </Link>
+                </Link>
             </div>
         </div>
     )

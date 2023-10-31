@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins';
+}
+
+:root {
+
+  --white: #fff;
+  --black: #242D49;
+  
+  --gray-light: #eee;
+  --gray-dark: #8E8A8B;
+
+  --red-button: #FF3F40;
+  
+  --yellow-button: #FF3E;
+
+  //--color-entity: rgb(170, 67, 218);
+  --color-entity: #8c05ca;
+
+  --yellow: #F5C32C;
+  --orange: #FCA61F;
+  --gray: #788097;
+  --blue-card: #DDF8FE;
+  --box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
+  --box-shadow-hover: 0px 19px 60px rgb(0 0 0 / 50%);
+  --box-shadow-card: 0px 19px 60px rgb(0 0 0 / 6%);
+
+  --active-item: #FCA61F;
+}
+
+button {
+
+  cursor: pointer;
+}
+
+a {
+
+  text-decoration: none;
+  color: inherit;
+}
+
+body {
+
+  background: var(--white);
+}
+
+body, input, select, textarea, button {
+
+  font: 400 1rem sans-serif; // 1rem = 16px
+}
+
+@media (max-width: 720px) {
+
+  html {
+
+    font-size: 87.5%; // 14px
+  }
+}
+
+@media (max-width: 1080px) {
+
+  html {
+
+    font-size: 93.75%; // 15px
+  }
+}
+
