@@ -36,10 +36,12 @@ type SignInProps = {
 
 type SignUpProps = {
     fullName: string,
-    biNumber: string,
+    identifyCardNumber: string,
     birthDate: string,
     genre: string,
+    username: string,
     email: string,
+    password: string,
     phoneNumber: string,
     provinceId: string,
     countyId: string,
@@ -97,8 +99,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         try {
 
-            console.log({ email, password });
-
             setUser({
                 id: "1",
                 email,
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             else if (email === 'marcos@gmail.com') {
                 toast.success('Logado com sucesso!');
                 Router.push('/painel_locatario');
-            } 
+            }
 
             else {
                 toast.error('Credenciais inválidas!');
@@ -133,10 +133,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const signUp = async ({
 
         fullName,
-        biNumber,
+        identifyCardNumber,
         birthDate,
         genre,
+        username,
         email,
+        password,
         phoneNumber,
         provinceId,
         countyId,
@@ -149,7 +151,46 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         try {
 
-            console.log({ email });
+            console.log({
+                fullName,
+                identifyCardNumber,
+                birthDate,
+                genre,
+                username,
+                email,
+                password,
+                phoneNumber,
+                provinceId,
+                countyId,
+                district,
+                neighborhood,
+                road,
+                houseNumber
+            })
+
+            /*
+            const person = await api.post('/persons', {
+                fullName,
+                identifyCardNumber,
+                phoneNumber,
+                birthDate,
+                fkLocalidade: {
+                    pkLocality: district
+                }
+            })
+
+            const account = await api.post('/api/usuario', {
+                username,
+                email,
+                password,
+                pessoa: {
+                    pkPerson: 7
+                },
+                tipoConta: {
+                    pkTypeOfAccount: 3
+                }
+            })
+            */
 
             toast.success('Cadastrado com sucesso!');
 

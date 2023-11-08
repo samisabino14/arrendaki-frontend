@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import { parseCookies } from 'nookies';
 
 import { AuthTokenError } from './errors/AuthTokenError';
-import { signOut, internalError } from '../contexts/AuthContext';
+import { signOut } from '../contexts/AuthContext';
 
 
 export const setupAPIClient = (context = undefined) => {
@@ -14,7 +14,7 @@ export const setupAPIClient = (context = undefined) => {
 
         baseURL: 'http://localhost:8080',
         headers: {
-            Authorization: `Bearer ${cookies['@arrendaki2023.token']}`
+            //Authorization: `Bearer ${cookies['@arrendaki2023.token']}`
         }
     })
 

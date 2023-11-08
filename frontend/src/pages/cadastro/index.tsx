@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 
 import { FiChevronLeft } from 'react-icons/fi'
-
+import axios from 'axios';
 import Head from 'next/head';
 
 import { canSSRGuest } from '../../utils/canSSRGuest';
@@ -45,27 +45,42 @@ export default function SignUp() {
 
     const provinces = [
         {
-            id:'112345',
-            name:'Benguela'
+            id: '112345',
+            name: 'Benguela'
         },
         {
-            id:'276543',
-            name:'Luanda'
+            id: '276543',
+            name: 'Luanda'
         },
+    ]
+
+    const typeOfAccounts = [
+        {
+            id: 1,
+            name: 'Proprietário'
+        },
+        {
+            id: 2,
+            name: 'Locatário'
+        }
     ]
 
     const { signUp } = useContext(AuthContext);
 
     const [provincesList] = useState(provinces || []);
     const [countysList, setCountysList] = useState([]);
-    
+    const [typeOfAccountList, setTypeOfAccountList] = useState(typeOfAccounts || []);
+
     const [fullName, setFullName] = useState("");
-    const [biNumber, setBiNumber] = useState("");
+    const [identifyCardNumber, setIdentifyCardNumber] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [genreList, setGenreList] = useState(genres || []);
     const [genre, setGenre] = useState("" || genres[0]);
 
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [pkTypeOfAccount, setPkTypeOfAccount] = useState("" || typeOfAccountList[0]?.id);
     const [phoneNumber, setPhoneNumber] = useState("");
 
     const [province, setProvince] = useState<string>("" || provincesList[0]?.id);
@@ -89,28 +104,28 @@ export default function SignUp() {
         setLoading(true)
 
 
-            async function findManyCountysByIDProvince() {
+        async function findAllTypeOfAccount() {
 
-                const countys = await api.get(`/province/countys`, {
-                    params: {
-                        provinceId: province
-                    }
+            const url = 'http://192.168.0.154:8080/tipoContas';
+            //const response = await 'http://localhost:8080/tipoContas';
+            // Faça uma solicitação GET
+
+            axios.get('http://192.168.0.154:8080/tipoContas')
+                .then(function (response) {
+                    // Se a solicitação for bem-sucedida, os dados estarão em response.data
+                    console.log('Dados recebidos:', response.data);
+                })
+                .catch(function (error) {
+                    // Em caso de erro, o erro estará disponível em error
+                    console.error('Erro ao fazer a solicitação:', error);
                 });
+        }
 
-                if (countys.data.length === 0) {
-                    toast.warn("Sem registro de municípios para esta província.");
-                    setCounty('');
-                }
-
-                setCountysList(countys.data);
-                setCounty(countys.data[0]?.id);
-            }
-
-            //findManyCountysByIDProvince();
+        //findAllTypeOfAccount();
 
         setLoading(false);
 
-    }, [province]);
+    }, []);
 
     const calculateYearDifference = (date1, date2) => {
 
@@ -145,7 +160,7 @@ export default function SignUp() {
 
         const differenceInYears = calculateYearDifference(birth, today);
 
-        if (!fullName || !biNumber || !birthDate || !genre) {
+        if (!fullName || !identifyCardNumber || !birthDate || !genre) {
             toast.warn("Preencha todos os campos.");
             setInfo("Preencha todos os campos.");
             return;
@@ -170,9 +185,9 @@ export default function SignUp() {
             return;
         }
 
-        if (biNumber.length !== 14) {
+        if (identifyCardNumber.length !== 14) {
             toast.error("Número do BI inválido.");
-            setInfo(`O número do BI tem ${biNumber.length} caracteres. Deve conter 14.`);
+            setInfo(`O número do BI tem ${identifyCardNumber.length} caracteres. Deve conter 14.`);
             return;
         }
 
@@ -198,7 +213,7 @@ export default function SignUp() {
 
         event.preventDefault();
 
-        if (!email || !phoneNumber) {
+        if (!email || !phoneNumber || !username || !password || !pkTypeOfAccount) {
             toast.warn("Preencha todos os campos.");
             setInfo("Preencha todos os campos");
             return;
@@ -253,17 +268,19 @@ export default function SignUp() {
             return;
         }
         */
-        
+
         setInfo('')
         setLoading(true);
 
         await signUp({
 
             fullName,
-            biNumber,
+            identifyCardNumber,
             birthDate,
             genre,
+            username,
             email,
+            password,
             phoneNumber,
             provinceId: province,
             countyId: county,
@@ -286,6 +303,10 @@ export default function SignUp() {
 
     const handleChangeCounty = (event) => {
         setCounty(countysList[event.target.value]?.id)
+    }
+
+    const handleChangeTypeOfAccount = (event) => {
+        setPkTypeOfAccount(typeOfAccountList[event.target.value].id)
     }
 
     useEffect(() => {
@@ -339,8 +360,8 @@ export default function SignUp() {
 
                                             placeholder="Número de identificação"
                                             type="text"
-                                            value={biNumber}
-                                            onChange={(e) => setBiNumber(e.target.value)}
+                                            value={identifyCardNumber}
+                                            onChange={(e) => setIdentifyCardNumber(e.target.value)}
                                         />
 
                                         <label className='text-sm my-3 text-gray-500' htmlFor="birthDate">Data de nascimento:</label>
@@ -354,7 +375,7 @@ export default function SignUp() {
 
                                         {genreList?.length !== 0 &&
                                             <>
-                                                <label className='text-sm my-3 text-gray-500' htmlFor="county">Gênero:</label>
+                                                <label className='text-sm my-3 text-gray-500' htmlFor="">Gênero:</label>
 
                                                 <Select
                                                     onChange={handleChangeGenre}
@@ -390,19 +411,46 @@ export default function SignUp() {
                         {formContact &&
                             <>
 
-                                <p className="text-lg mb-10 font-semibold">Contactos</p>
+                                <p className="text-lg mb-10 font-semibold">Utilizador</p>
 
                                 <form onSubmit={goLocation}>
 
                                     <div>
 
+                                        <label className='text-sm my-3 text-gray-500' htmlFor="county">Nome de utilizador:</label>
+
+                                        <Input
+
+                                            placeholder="Nome de utilizador"
+                                            type="text"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            required
+                                        />
+
+                                        <label className='text-sm my-3 text-gray-500' htmlFor="county">Email:</label>
+
                                         <Input
 
                                             placeholder="Email"
-                                            type="email"
+                                            type="enail"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
+                                            required
                                         />
+
+                                        <label className='text-sm my-3 text-gray-500' htmlFor="">Palavra-passe:</label>
+
+                                        <Input
+
+                                            placeholder="Palavra-passe"
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+
+                                        <label className='text-sm my-3 text-gray-500' htmlFor="">Telemóvel:</label>
 
                                         <Input
 
@@ -412,6 +460,25 @@ export default function SignUp() {
                                             onChange={(e) => setPhoneNumber(e.target.value)}
                                             required
                                         />
+
+
+                                        {typeOfAccountList?.length !== 0 &&
+                                            <>
+                                                <label className='text-sm my-3 text-gray-500' htmlFor="">Tipo de utilizador:</label>
+
+                                                <Select
+                                                    onChange={handleChangeTypeOfAccount}
+                                                    required
+                                                >
+                                                    {typeOfAccountList.map((typeOfAccount, index) => {
+                                                        return (
+                                                            <option key={typeOfAccount.id} value={index}>{typeOfAccount.name}</option>
+                                                        )
+                                                    })}
+
+                                                </Select>
+                                            </>
+                                        }
 
                                         {
                                             info && <p className='md:text-sm text-xs font-bold text-red-500 md:py-2'>{info}</p>

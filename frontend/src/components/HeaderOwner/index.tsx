@@ -29,7 +29,7 @@ export const HeaderOwner = () => {
 
     return (
 
-        <div className='fixed bg-white top-0 w-[100%] z-20'>
+        <div className='fixed bg-white top-0 w-[100%] z-20 border-b'>
             <div className='container mx-auto flex justify-between items-center p-4'>
                 <div className='flex gap-1 items-center text-purple-700 font-bold text-xl md:text-2xl'>
                     <Link href='/painel_proprietario'>
