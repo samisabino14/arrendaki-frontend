@@ -1,3 +1,4 @@
+import { canSSRGuest } from "@/utils/canSSRGuest";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -14,8 +15,7 @@ const Error = () => {
                 <h1 className="text-9xl font-bold">404</h1>
                 <h1 className="text-1xl pb-8">Página não encontrada</h1>
                 <h1 className="text-sm ">Arrendaki</h1>
-                <div  onClick={router.back} className="text-sm py-10 text-center ">
-
+                <div onClick={() => router.push('/login')} className="text-sm py-10 text-center ">
                     <button className="hover:scale-110 transition-all duration-300 text-purple-400 p-4 font-bold lg:px-20 bg-white rounded-lg">
                         Voltar
                     </button>

@@ -12,19 +12,32 @@ import { parseCookies, destroyCookie } from 'nookies';
 
 import { AuthTokenError } from '../services/errors/AuthTokenError';
 
-interface Role {
-    
-    role: string;
+interface AccountTypeOfAccount {
+
+    accountTypeOfAccount: [
+        pkAccountTypeOfAccount: string,
+        fkAccount: string,
+        fkTypeOfAccount: string,
+        createdAt: Date,
+        updatedAt: Date,
+        TypeOfAccount: {
+            pkTypeOfAccount: string,
+            designation: string,
+            createdAt: Date,
+            updatedAt: Date
+        }
+    ];
 }
 
-export function canSSRAuthority<P>(fn: GetServerSideProps<P>) {
+
+export function canSSRProprietario<P>(fn: GetServerSideProps<P>) {
 
     return async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {
 
         const cookies = parseCookies(context);
 
-        const token = cookies['@authlip2022.token'];
-        
+        const token = cookies['@arrendaki2023.token'];
+
         if (!token) {
 
             return {
@@ -37,40 +50,38 @@ export function canSSRAuthority<P>(fn: GetServerSideProps<P>) {
             }
         }
 
-        const { role } = verify(
+        const { accountTypeOfAccount } = verify(
 
             token,
             process.env.JWT_SECRET
 
-        ) as Role;
+        ) as AccountTypeOfAccount;
 
         try {
-             
-            if(role !== 'autoridade') {
 
-                return {
+            accountTypeOfAccount.map(item => {
 
-                    redirect: {
-
-                        destination: '/authority',
-                        permanent: false
+                if (item.TypeOfAccount.designation.toLowerCase() === 'proprietario') {
+                    
+                    return {
+                        redirect: {
+                            destination: '/painel_proprietario',
+                            permanent: false
+                        }
                     }
                 }
-            }
-
+            })
             return await fn(context);
-            
+
         } catch (err) {
 
             if (err instanceof AuthTokenError) {
 
-                destroyCookie(context, '@authlip2022.token');
+                destroyCookie(context, '@arrendaki2023.token');
             }
 
             return {
-
                 redirect: {
-
                     destination: '/',
                     permanent: false
                 }

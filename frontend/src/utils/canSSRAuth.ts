@@ -22,8 +22,8 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
     return async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {
 
         const cookies = parseCookies(context);
-
-        const token = cookies['@authlip2022.token'];
+        
+        const token = cookies['@arrendaki2023.token'];
         
         if (!token) {
 
@@ -37,13 +37,6 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
             }
         }
         
-        const { role } = verify(
-
-            token,
-            process.env.JWT_SECRET
-
-        ) as Role;
-        
         try {
 
             return await fn(context);
@@ -52,7 +45,7 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
 
             if (err instanceof AuthTokenError) {
 
-                destroyCookie(context, '@authlip2022.token');
+                destroyCookie(context, '@arrendaki2023.token');
             }
 
             return {

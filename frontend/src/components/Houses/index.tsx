@@ -9,11 +9,14 @@ const Houses = () => {
             <Headline title='Casas' />
 
             <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-20 py-12'>
+
+                
                 <Card image='/assets/house1.JPEG' title='' />
                 <Card image='/assets/house2.JPEG' title='' />
                 <Card image='/assets/house3.JPEG' title='' />
                 <Card image='/assets/house4.JPEG' title='' />
             </div>
+
         </section>
     )
 }

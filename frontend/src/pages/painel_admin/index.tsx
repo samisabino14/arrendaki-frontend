@@ -1,3 +1,4 @@
+import { canSSRAdmin } from '@/utils/canSSRAdmin'
 import React from 'react'
 
 function PainelAdmin() {
@@ -7,3 +8,11 @@ function PainelAdmin() {
 }
 
 export default PainelAdmin
+
+export const getServerSideProps = canSSRAdmin(async (context) => {
+
+  return {
+    props: {
+    }
+  }
+})
