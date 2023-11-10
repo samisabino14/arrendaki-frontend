@@ -25,8 +25,10 @@ type AuthContextData = {
 }
 
 type UserProps = {
-    id: string
-    email: string
+    pkAccount: string,
+    email: string,
+    fkPerson: string,
+
 }
 
 type SignInProps = {
@@ -43,12 +45,13 @@ type SignUpProps = {
     email: string,
     password: string,
     phoneNumber: string,
-    provinceId: string,
-    countyId: string,
-    district: string,
+    fkProvince: string,
+    fkCounty: string,
+    fkDistrict: string,
     neighborhood: string,
     road: string,
     houseNumber: string,
+    pkTypeOfAccount: string
 }
 
 interface RoleProps {
@@ -87,43 +90,90 @@ export const internalError = () => {
 export function AuthProvider({ children }: AuthProviderProps) {
 
     const [user, setUser] = useState<UserProps>({
-        id: "",
-        email: ""
+        pkAccount: "",
+        email: "",
+        fkPerson: "",
     });
 
     const [auxUser, setAuxUser] = useState({});
 
     const isAuthenticated = !!user;
 
+    useEffect(() => {
+
+        const { '@arrendaki2023.token': token } = parseCookies();
+
+        if (token) {
+            api.get('/me').then(response => {
+
+                const myAccount = response.data;
+
+                const {
+
+                    pkAccount,
+                    email,
+                    fkPerson,
+
+                } = myAccount;
+
+                setUser({
+                    pkAccount,
+                    email,
+                    fkPerson
+                })
+
+            }).catch(() => {
+                signOut();
+            })
+        }
+    }, [])
+
     const signIn = async ({ email, password }: SignInProps) => {
 
         try {
 
-            setUser({
-                id: "1",
+            const response = await api.post('/session', {
                 email,
+                password
+            });
+
+            const {
+
+                token,
+                pkAccount,
+                accountTypeOfAccount
+
+            } = response.data
+
+            setCookie(undefined, '@arrendaki2023.token', token, {
+                maxAge: 60 * 60 * 24, // Expires in 1 day
+                path: '/' // Path accessed by cookie
+            });
+
+            setUser({
+                pkAccount,
+                email: response.data.email,
+                fkPerson: "",
             })
 
-            if (email === 'sami@gmail.com') {
-                toast.success('Logado com sucesso!');
-                Router.push('/painel_admin');
-            }
+            api.defaults.headers['Authorization'] = `Bearer ${token}`;
 
-            else if (email === 'jozzy@gmail.com') {
-                toast.success('Logado com sucesso!');
-                Router.push('/painel_proprietario');
-            }
+            accountTypeOfAccount.map(accountTypeOfAccount => {
 
-            else if (email === 'marcos@gmail.com') {
-                toast.success('Logado com sucesso!');
-                Router.push('/painel_locatario');
-            }
+                if (accountTypeOfAccount.TypeOfAccount.designation.toLowerCase() === 'proprietario') {
+                    Router.push('/painel_proprietario');
+                }
 
-            else {
-                toast.error('Credenciais inválidas!');
-            }
+                else if (accountTypeOfAccount.TypeOfAccount.designation.toLowerCase() === 'locatario') {
+                    Router.push('/painel_locatario');
+                }
 
-            //toast.success('Logado com sucesso!');
+                else if (accountTypeOfAccount.TypeOfAccount.designation.toLowerCase() === 'admin') {
+                    Router.push('/painel_admin');
+                }
+            })
+
+            toast.success('Logado com sucesso!');
 
         } catch (err) {
             toast.error('Conexão perdida ou credenciais inválidas.');
@@ -140,57 +190,57 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email,
         password,
         phoneNumber,
-        provinceId,
-        countyId,
-        district,
+        fkProvince,
+        fkCounty,
+        fkDistrict,
         neighborhood,
         road,
-        houseNumber
+        houseNumber,
+        pkTypeOfAccount
 
     }: SignUpProps) => {
 
         try {
 
-            console.log({
-                fullName,
-                identifyCardNumber,
-                birthDate,
-                genre,
-                username,
-                email,
-                password,
-                phoneNumber,
-                provinceId,
-                countyId,
-                district,
+            if (!houseNumber) {
+                houseNumber = "S/N"
+            }
+
+            const response = await api.get(`/accounts/${email}`);
+            const emailAlreadyExists = response.data;
+
+            if (emailAlreadyExists !== null) {
+                toast.error("Email já existente");
+                return;
+            }
+
+            const locality = await api.post('/localitys', {
                 neighborhood,
                 road,
-                houseNumber
+                houseNumber,
+                fkDistrict
             })
 
-            /*
             const person = await api.post('/persons', {
                 fullName,
                 identifyCardNumber,
                 phoneNumber,
                 birthDate,
-                fkLocalidade: {
-                    pkLocality: district
-                }
-            })
+                fkLocality: locality.data.pkLocality
+            });
 
-            const account = await api.post('/api/usuario', {
-                username,
+            const pkPerson = person.data?.pkPerson;
+
+            const account = await api.post('/accounts', {
                 email,
                 password,
-                pessoa: {
-                    pkPerson: 7
-                },
-                tipoConta: {
-                    pkTypeOfAccount: 3
-                }
-            })
-            */
+                fkPerson: pkPerson
+            });
+
+            const typeOfAccount = await api.post('/accountTypeOfAccount', {
+                fkTypeOfAccount: pkTypeOfAccount,
+                fkAccount: account.data.pkAccount
+            });
 
             toast.success('Cadastrado com sucesso!');
 

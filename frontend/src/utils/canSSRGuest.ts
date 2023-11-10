@@ -10,9 +10,21 @@ import {
 import { parseCookies } from 'nookies';
 
 
-interface Role {
-    
-    role: string;
+interface AccountTypeOfAccount {
+
+    accountTypeOfAccount: [
+        pkAccountTypeOfAccount: string,
+        fkAccount: string,
+        fkTypeOfAccount: string,
+        createdAt: Date,
+        updatedAt: Date,
+        TypeOfAccount: {
+            pkTypeOfAccount: string,
+            designation: string,
+            createdAt: Date,
+            updatedAt: Date
+        }
+    ];
 }
 
 export function canSSRGuest<P>(fn: GetServerSideProps<P>) {
@@ -21,54 +33,61 @@ export function canSSRGuest<P>(fn: GetServerSideProps<P>) {
 
         const cookies = parseCookies(context);
 
-        const token = cookies['@authlip2022.token'];
+        const token = cookies['@arrendaki2023.token'];
 
         if (token) {
+            
 
-            const { role } = verify(
+            const { accountTypeOfAccount } = verify(
 
                 token,
                 process.env.JWT_SECRET
 
-            ) as Role;            
-
-            if(role === 'administrador') {
+            ) as AccountTypeOfAccount;
             
+            if (accountTypeOfAccount[0].TypeOfAccount.designation.toLowerCase() === 'locatario') {
+
                 return {
-
                     redirect: {
-
-                        destination: '/dashboard',
+                        destination: '/painel_locatario',
                         permanent: false
                     }
                 }
             }
 
-            if(role === 'funcionario') {
-            
-                return {
+            console.log(accountTypeOfAccount)
 
-                    redirect: {
+            accountTypeOfAccount.map(item => {
+                
+                if (item.TypeOfAccount.designation.toLowerCase() === 'locatario') {
 
-                        destination: '/employee',
-                        permanent: false
+                    return {
+                        redirect: {
+                            destination: '/painel_locatario',
+                            permanent: false
+                        }
                     }
                 }
-            }  
 
-            if(role === 'autoridade') {
-            
-                return {
+                if (item.TypeOfAccount.designation.toLowerCase() === 'proprietario') {
 
-                    redirect: {
-
-                        destination: '/authority',
-                        permanent: false
+                    return {
+                        redirect: {
+                            destination: '/painel_proprietario',
+                            permanent: false
+                        }
                     }
                 }
-            }            
+                if (item.TypeOfAccount.designation === 'admin') {
+                    return {
+                        redirect: {
+                            destination: '/painel_admin',
+                            permanent: false
+                        }
+                    }
+                }
+            })
         }
-
         return await fn(context);
     }
 }

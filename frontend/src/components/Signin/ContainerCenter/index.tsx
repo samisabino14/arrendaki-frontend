@@ -59,7 +59,7 @@ export const ContainerCenter = ({
 
                         <button className={styles.buttonBack}>
 
-                            <Link href='/signup'>
+                            <Link href='/cadastro'>
 
                                 <span className="text-sm">Inscrever-me</span>
 

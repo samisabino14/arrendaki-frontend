@@ -12,7 +12,6 @@ import { parseCookies, destroyCookie } from 'nookies';
 
 import { AuthTokenError } from '../services/errors/AuthTokenError';
 
-
 interface AccountTypeOfAccount {
 
     accountTypeOfAccount: [
@@ -30,7 +29,8 @@ interface AccountTypeOfAccount {
     ];
 }
 
-export function canSSRAdmin<P>(fn: GetServerSideProps<P>) {
+
+export function canSSRLocatario<P>(fn: GetServerSideProps<P>) {
 
     return async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {
 
@@ -43,6 +43,7 @@ export function canSSRAdmin<P>(fn: GetServerSideProps<P>) {
             return {
 
                 redirect: {
+
                     destination: '/authorizedOnly',
                     permanent: false
                 }
@@ -58,23 +59,27 @@ export function canSSRAdmin<P>(fn: GetServerSideProps<P>) {
 
         try {
 
+            return await fn(context);
+            /*
             accountTypeOfAccount.map(item => {
-            console.log(accountTypeOfAccount)
 
-                if (item.TypeOfAccount.designation === 'admin') {
+                if (item.TypeOfAccount.designation.toLowerCase() === 'locatario') {
+                    console.log(item.TypeOfAccount.designation)
+
                     return {
                         redirect: {
-                            destination: '/painel_admin',
+                            destination: '/painel_locatario',
                             permanent: false
                         }
                     }
                 }
-            })
 
+            })
             return await fn(context);
+            */
 
         } catch (err) {
-
+            
             if (err instanceof AuthTokenError) {
                 destroyCookie(context, '@arrendaki2023.token');
             }
@@ -82,6 +87,7 @@ export function canSSRAdmin<P>(fn: GetServerSideProps<P>) {
             return {
 
                 redirect: {
+
                     destination: '/',
                     permanent: false
                 }

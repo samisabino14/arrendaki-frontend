@@ -12,9 +12,9 @@ export const setupAPIClient = (context = undefined) => {
 
     const api = axios.create({
 
-        baseURL: 'http://localhost:8080',
+        baseURL: 'http://localhost:5000',
         headers: {
-            //Authorization: `Bearer ${cookies['@arrendaki2023.token']}`
+            Authorization: `Bearer ${cookies['@arrendaki2023.token']}`
         }
     })
 

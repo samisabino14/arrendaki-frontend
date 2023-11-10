@@ -43,50 +43,29 @@ export default function SignUp() {
         "Masculino"
     ]
 
-    const provinces = [
-        {
-            id: '112345',
-            name: 'Benguela'
-        },
-        {
-            id: '276543',
-            name: 'Luanda'
-        },
-    ]
-
-    const typeOfAccounts = [
-        {
-            id: 1,
-            name: 'Proprietário'
-        },
-        {
-            id: 2,
-            name: 'Locatário'
-        }
-    ]
-
     const { signUp } = useContext(AuthContext);
 
-    const [provincesList] = useState(provinces || []);
+    const [provincesList, setProvincesList] = useState([]);
     const [countysList, setCountysList] = useState([]);
-    const [typeOfAccountList, setTypeOfAccountList] = useState(typeOfAccounts || []);
-
+    const [districtList, setDistrictList] = useState([]);
+    const [typeOfAccountList, setTypeOfAccountList] = useState([]);
+    const [genreList, setGenreList] = useState(genres || []);
+    
     const [fullName, setFullName] = useState("");
     const [identifyCardNumber, setIdentifyCardNumber] = useState("");
     const [birthDate, setBirthDate] = useState("");
-    const [genreList, setGenreList] = useState(genres || []);
     const [genre, setGenre] = useState("" || genres[0]);
 
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [pkTypeOfAccount, setPkTypeOfAccount] = useState("" || typeOfAccountList[0]?.id);
+    const [pkTypeOfAccount, setPkTypeOfAccount] = useState("" || typeOfAccountList[0]?.pkTypeOfAccount);
     const [phoneNumber, setPhoneNumber] = useState("");
 
-    const [province, setProvince] = useState<string>("" || provincesList[0]?.id);
-    const [county, setCounty] = useState<string>("");
+    const [province, setProvince] = useState<string>("" || provincesList[0]?.pkProvince);
+    const [county, setCounty] = useState<string>("" || countysList[0]?.pkCounty);
+    const [district, setDistrict] = useState<string>("" || districtList[0]?.pkDistrict);
 
-    const [district, setDistrict] = useState("");
     const [neighborhood, setNeighborhood] = useState("");
     const [road, setRoad] = useState("");
     const [houseNumber, setHouseNumber] = useState("");
@@ -103,29 +82,72 @@ export default function SignUp() {
 
         setLoading(true)
 
-
         async function findAllTypeOfAccount() {
 
-            const url = 'http://192.168.0.154:8080/tipoContas';
-            //const response = await 'http://localhost:8080/tipoContas';
-            // Faça uma solicitação GET
+            const response = await api.get('/typeOfAccount');
 
-            axios.get('http://192.168.0.154:8080/tipoContas')
-                .then(function (response) {
-                    // Se a solicitação for bem-sucedida, os dados estarão em response.data
-                    console.log('Dados recebidos:', response.data);
-                })
-                .catch(function (error) {
-                    // Em caso de erro, o erro estará disponível em error
-                    console.error('Erro ao fazer a solicitação:', error);
-                });
+            setTypeOfAccountList(response.data.filter(
+                typeOfAccount => typeOfAccount.designation.toLowerCase() !== 'admin' ||
+                    typeOfAccount.designation.toLowerCase() === null
+            ));
         }
 
-        //findAllTypeOfAccount();
+        findAllTypeOfAccount();
 
         setLoading(false);
 
     }, []);
+
+    useEffect(() => {
+
+        setLoading(true)
+
+        async function findAllProvinces() {
+
+            const response = await api.get('/provinces');
+
+            setProvincesList(response.data);
+        }
+
+        findAllProvinces();
+
+        setLoading(false);
+
+    }, []);
+
+    useEffect(() => {
+
+        setLoading(true)
+
+        async function findAllCountys() {
+
+            const response = await api.get('/countys');
+
+            setCountysList(response.data);
+        }
+
+        findAllCountys();
+
+        setLoading(false);
+
+    }, [province]);
+
+    useEffect(() => {
+
+        setLoading(true)
+
+        async function findAllDistrict() {
+
+            const response = await api.get('/districts');
+
+            setDistrictList(response.data);
+        }
+
+        findAllDistrict();
+
+        setLoading(false);
+
+    }, [county]);
 
     const calculateYearDifference = (date1, date2) => {
 
@@ -164,8 +186,7 @@ export default function SignUp() {
             toast.warn("Preencha todos os campos.");
             setInfo("Preencha todos os campos.");
             return;
-        }
-
+        }        
 
         if (new Date(birthDate) > new Date()) {
             toast.error("Data de nascimento inválida.");
@@ -213,6 +234,10 @@ export default function SignUp() {
 
         event.preventDefault();
 
+        console.log(
+            provincesList
+        )
+
         if (!email || !phoneNumber || !username || !password || !pkTypeOfAccount) {
             toast.warn("Preencha todos os campos.");
             setInfo("Preencha todos os campos");
@@ -245,6 +270,25 @@ export default function SignUp() {
     const handleSignUp = async (event: FormEvent) => {
 
         event.preventDefault();
+        
+        console.log({
+            fullName,
+            identifyCardNumber,
+            birthDate,
+            genre,
+            username,
+            email,
+            password,
+            phoneNumber,
+            provinceId: province,
+            countyId: county,
+            districtId: district,
+            neighborhood,
+            road,
+            houseNumber,
+            pkTypeOfAccount
+        })
+
 
         if (!province || !district || !neighborhood) {
 
@@ -282,12 +326,13 @@ export default function SignUp() {
             email,
             password,
             phoneNumber,
-            provinceId: province,
-            countyId: county,
-            district,
+            fkProvince: province,
+            fkCounty: county,
+            fkDistrict: district,
             neighborhood,
             road,
-            houseNumber
+            houseNumber,
+            pkTypeOfAccount
         })
 
         setLoading(false);
@@ -298,15 +343,19 @@ export default function SignUp() {
     }
 
     const handleChangeProvince = (event) => {
-        setProvince(provincesList[event.target.value]?.id)
+        setProvince(provincesList[event.target.value]?.pkProvince)
     }
 
     const handleChangeCounty = (event) => {
-        setCounty(countysList[event.target.value]?.id)
+        setCounty(countysList[event.target.value]?.pkCounty)
+    }
+
+    const handleChangeDistrict = (event) => {
+        setDistrict(districtList[event.target.value]?.pkDistrict)
     }
 
     const handleChangeTypeOfAccount = (event) => {
-        setPkTypeOfAccount(typeOfAccountList[event.target.value].id)
+        setPkTypeOfAccount(typeOfAccountList[event.target.value].pkTypeOfAccount)
     }
 
     useEffect(() => {
@@ -472,7 +521,7 @@ export default function SignUp() {
                                                 >
                                                     {typeOfAccountList.map((typeOfAccount, index) => {
                                                         return (
-                                                            <option key={typeOfAccount.id} value={index}>{typeOfAccount.name}</option>
+                                                            <option key={typeOfAccount.pkTypeOfAccount} value={index}>{typeOfAccount.designation}</option>
                                                         )
                                                     })}
 
@@ -521,7 +570,7 @@ export default function SignUp() {
                                                 >
                                                     {provincesList.map((province, index) => {
                                                         return (
-                                                            <option key={province.id} value={index}>{province.name}</option>
+                                                            <option key={province.pkProvince} value={index}>{province.designation}</option>
                                                         )
                                                     })}
 
@@ -541,7 +590,7 @@ export default function SignUp() {
                                                     {
                                                         countysList.map((county, index) => {
                                                             return (
-                                                                <option key={county.id} value={index}>{county.name}</option>
+                                                                <option key={county.pkCounty} value={index}>{county.designation}</option>
                                                             )
                                                         })
                                                     }
@@ -549,18 +598,25 @@ export default function SignUp() {
                                             </>
                                         }
 
-                                        <label className='text-sm' htmlFor="district">Distrito/Comuna:</label>
+                                        {districtList?.length !== 0 &&
 
-                                        <Input
+                                            <>
+                                                <label className='text-sm' htmlFor="district">Distrito/Comuna:</label>
 
-                                            id='district'
-                                            name='district'
-                                            placeholder="Distrito/Comuna"
-                                            type="text"
-                                            value={district}
-                                            onChange={(e) => setDistrict(e.target.value)}
-                                            required
-                                        />
+                                                <Select
+                                                    onChange={handleChangeDistrict}
+                                                    required
+                                                >
+                                                    {
+                                                        districtList.map((district, index) => {
+                                                            return (
+                                                                <option key={district.pkDistrict} value={index}>{district.designation}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </Select>
+                                            </>
+                                        }
 
                                         <label className='text-sm' htmlFor="district">Bairro:</label>
 
@@ -631,11 +687,9 @@ export default function SignUp() {
     )
 }
 
-/*
+
 export const getServerSideProps = canSSRGuest(async (context) => {
     const apiClient = setupAPIClient(context);
-
-    const provinces = await apiClient.get(`/provinces`);
 
     const genres = [
         "Feminino",
@@ -645,9 +699,7 @@ export const getServerSideProps = canSSRGuest(async (context) => {
     return {
 
         props: {
-            provinces: provinces.data,
-            genres
+           
         }
     }
 })
-*/
