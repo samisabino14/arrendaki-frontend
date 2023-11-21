@@ -43,18 +43,6 @@ export const HeaderLocatario = () => {
                         <span className='hover:text-purple-700'>Início</span>
                     </Link>
 
-                    <Link href='/painel_locatario/casas'>
-
-                        <span className='hover:text-purple-700'>Minhas casas</span>
-
-                    </Link>
-
-                    <Link href='/painel_locatario/casas/nova'>
-
-                        <span className='hover:text-purple-700'>Registar casa</span>
-
-                    </Link>
-
                     <Link href='/painel_locatario/perfil'>
 
                         <span className='hover:text-purple-700'>Perfil</span>
@@ -94,17 +82,6 @@ export const HeaderLocatario = () => {
                     <span className='hover:text-purple-700 p-5'>Início</span>
                 </Link>
 
-                <Link href='/painel_locatario/casas'>
-
-                    <span className='hover:text-purple-700 p-5'>Minhas casas</span>
-
-                </Link>
-
-                <Link href='/painel_locatario/casas/nova'>
-
-                    <span className='hover:text-purple-700 p-5'>Registar casa</span>
-
-                </Link>
 
                 <Link href='/painel_locatario/perfil'>
 

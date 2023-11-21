@@ -141,19 +141,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
                 token,
                 pkAccount,
-                accountTypeOfAccount
-
+                accountTypeOfAccount,
+                fkPerson
             } = response.data
-
+            
             setCookie(undefined, '@arrendaki2023.token', token, {
                 maxAge: 60 * 60 * 24, // Expires in 1 day
                 path: '/' // Path accessed by cookie
             });
 
+
             setUser({
                 pkAccount,
                 email: response.data.email,
-                fkPerson: "",
+                fkPerson,
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${token}`;
