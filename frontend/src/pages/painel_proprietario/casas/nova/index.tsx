@@ -174,7 +174,6 @@ function Nova() {
         }
     }
 
-
     const handleSave = async (e: FormEvent) => {
 
         e.preventDefault();
@@ -225,6 +224,16 @@ function Nova() {
                 fkDistrict: districtResponse.data.pkDistrict
             });
 
+            console.log(user)
+
+            console.log({
+                address: `${neighborhood}, ${road}, ${houseNumber},`,
+                iban,
+                pricePerMonth,
+                fkOwner: user.fkPerson,
+                fkLocality: localityResponse.data.pkLocality,
+                fkTypology: typoligyResponse.data.pkTypology,
+            })
 
             const residenceResponse = await api.post('/residences', {
                 address: `${neighborhood}, ${road}, ${houseNumber},`,
@@ -234,7 +243,6 @@ function Nova() {
                 fkLocality: localityResponse.data.pkLocality,
                 fkTypology: typoligyResponse.data.pkTypology,
             });
-
 
             const fkResidence = residenceResponse.data.pkResidence
 
@@ -249,15 +257,11 @@ function Nova() {
 
             toast.success('Casa salva!');
 
-            Router.push('casas');
+            Router.push('/painel_proprietario');
 
         } catch (err) {
             toast.error('Erro ao guardar!');
         }
-
-
-
-
     }
 
     return (

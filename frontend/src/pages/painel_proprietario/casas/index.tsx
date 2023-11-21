@@ -4,6 +4,7 @@ import { api } from '@/services/apiClient';
 import { canSSRProprietario } from '@/utils/canSSRProprietario';
 import Head from 'next/head'
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect, useState, useContext } from 'react'
 
 function Casas() {
@@ -47,36 +48,45 @@ function Casas() {
 
             <div className='p-20'>
 
-                
+
 
 
                 <h1>Casas</h1>
 
-                {residencesList.map((residence, index) => {
-                    return (
+                {residencesList.map((residence, index) => (
 
-                        <>
-                            <h1>{residence.Photos[0].designation}</h1>
 
-                            {residence.Photos && residence.Photos.map((photo, index) => {
-                                <>
-                                    <h1>UDSUDUS</h1>
+                    <div key={index}
+                        className='rounded-lg p-10 flex flex-col justify-center items-center gap-8'
+                    >
 
-                                    <div key={photo.pkPhoto}>
-                                        <p >{photo}</p>
+                        <img className='bg-gray-200'
+                            src={`http://localhost:5000/files/${residence.Photos[0].designation}`}
+                            alt="" width={320} height={280}
+                        />
 
-                                    </div>
-                                </>
+                        <div className='text-sm text-gray-800'>
 
-                            })}
+                            <p><span className='text-xl text-purple-700 font-bold'>{residence.pricePerMonth} AKz</span></p>
+                            <p>Tipologia: <span className='text-xl font-bold'>{residence.Typology.designation}</span></p>
+                            
+                            <p>Endereço: {residence.address}</p>
+                            <p>Mobiliada: {residence.isFurnished ? 'Sim' : 'Não'}</p>
+                        </div>
 
-                            <div key={residence.pkResidence}>
-                                <p>{residence.pricePerMonth}</p>
+                        <div className=''>
+                            <Link
+                                className='px-32 text-center py-2 m-5 bg-purple-700 text-white font-semibold 
+                                    rounded-lg text-sm hover:bg-purple-800 hover:scale-125'
+                                href={`painel_proprietario/${residence.pkResidence}`}
+                            >
+                                Detalhes
+                            </Link>
 
-                            </div>
-                        </>
-                    )
-                })}
+                        </div>
+
+                    </div>
+                ))}
             </div>
 
         </>
@@ -88,7 +98,7 @@ export default Casas
 export const getServerSideProps = canSSRProprietario(async (context) => {
 
     return {
-      props: {
-      }
+        props: {
+        }
     }
-  })
+})

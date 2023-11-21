@@ -43,12 +43,6 @@ export const HeaderOwner = () => {
                         <span className='hover:text-purple-700'>Início</span>
                     </Link>
 
-                    <Link href='/painel_proprietario/casas'>
-
-                        <span className='hover:text-purple-700'>Minhas casas</span>
-
-                    </Link>
-
                     <Link href='/painel_proprietario/casas/nova'>
 
                         <span className='hover:text-purple-700'>Registar casa</span>
@@ -92,12 +86,6 @@ export const HeaderOwner = () => {
 
                 <Link href='/painel_proprietario'>
                     <span className='hover:text-purple-700 p-5'>Início</span>
-                </Link>
-
-                <Link href='/painel_proprietario/casas'>
-
-                    <span className='hover:text-purple-700 p-5'>Minhas casas</span>
-
                 </Link>
 
                 <Link href='/painel_proprietario/casas/nova'>
